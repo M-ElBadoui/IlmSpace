@@ -1,30 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:ilmspace/home/personal/PersonalPage.dart';
 import 'package:ilmspace/main/MainScreen.dart';
-import 'package:ilmspace/main/Mode.dart';
+import 'package:ilmspace/main/themes/ThemeState.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:ilmspace/main/themes/ThemeBloc.dart';
 
 
-void main() => runApp(MyApp());
+void main() => runApp(IlmSpace());
 
-class MyApp extends StatelessWidget {
+
+class IlmSpace extends StatelessWidget {
+
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/main',
-      routes: <String, WidgetBuilder>{
-        '/main': (BuildContext context) => MainScreen(mode: BrownMode,),
-        '/personal': (BuildContext context) => PersonalPage(),
-      },
-      title: 'main',
-
+    return BlocProvider(
+      builder: (context) => ThemeBloc(),
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: _buildWithTheme,
+      ),
     );
-  }
 }
 
-Mode DarkMode = Mode(backgroundColor: Color.fromRGBO(20, 20, 20, 1), foregroundColor: Color.fromRGBO(60, 60, 60, 1), buttonColor: Color.fromRGBO(248, 52, 72, 1), iconColor: Colors.white);
-Mode BrownMode = Mode(backgroundColor: Color.fromRGBO(243, 243, 238, 1), foregroundColor: Color.fromRGBO(208, 160, 97, 1), buttonColor: Color.fromRGBO(189, 189, 164, 1), iconColor: Colors.black);
+Widget _buildWithTheme(BuildContext context, ThemeState state) {
+  return MaterialApp(
+    theme: state.themeData,
+
+    initialRoute: '/main',
+    routes: <String, WidgetBuilder>{
+      '/main': (BuildContext context) => MainScreen(),
+      '/personal': (BuildContext context) => PersonalPage(),
+    },
+    title: 'main',
+  );
+}
+}
 
 
 
 
+//      darkTheme: ThemeData.dark(),
+//      theme: ThemeData(
+//        primaryColorDark: Colors.grey,
+//        canvasColor: Colors.white,
+//        primaryColor: Colors.green,
+//        accentColor: Colors.grey,
+//        splashColor: Colors.grey,
+//        textTheme: TextTheme(
+//
+//          body1: TextStyle(),
+//          body2: TextStyle(),
+//        ).apply(
+//          bodyColor: Colors.orange,
+//          displayColor: Colors.grey,
+//        ),
+//      ),

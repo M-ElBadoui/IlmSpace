@@ -17,7 +17,7 @@ class OptionsListTile extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: () => {},
+        onTap: onTap,
         splashColor: Color.fromRGBO(228, 180, 117, 1),
         child: Container(
           height: 50,

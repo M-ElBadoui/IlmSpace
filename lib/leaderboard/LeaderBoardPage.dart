@@ -21,7 +21,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> {
           title: Container(
             height: 50,
             width: screenWidth,
-            child: Image.asset("assets/images/home/bismillah_wide.png",
+            child: Image.asset("assets/images/home/bismillah.png",
                 alignment: Alignment.center),
           ),
         ),

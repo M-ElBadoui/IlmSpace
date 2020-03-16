@@ -1,41 +1,33 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:ilmspace/home/Badge.dart';
 import 'package:ilmspace/home/InputBar.dart';
-import 'package:ilmspace/main/Mode.dart';
+import 'package:ilmspace/main/themes/AppThemes.dart';
+import 'package:ilmspace/main/themes/ThemeBloc.dart';
+import 'package:ilmspace/main/themes/ThemeEvent.dart';
 
 class HomePage extends StatefulWidget {
   final GlobalKey<ScaffoldState> drawerKey;
-  final Mode mode;
   final String name;
+  final double appBarHeight;
 
-  HomePage({Key key, this.drawerKey, this.mode, this.name = "Mohammed"})
-      : super(key: key);
+  HomePage({Key key, this.drawerKey, this.name = "Mohammed", this.appBarHeight}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  static Image life =
-      Image.asset("assets/images/home/life.png", alignment: Alignment.center);
 
-  List<Image> lives = [life, life, life, life, life, life, life];
 
-  void loseLife() {
+  var darkMode = true;
+
+  changeMode() {
     setState(() {
-      if (lives.length > 0) {
-        lives.removeLast();
-      }
-    });
-  }
-
-  void gainLife() {
-    setState(() {
-      if (lives.length < 7) {
-        lives.add(life);
-      }
+      darkMode = !darkMode;
     });
   }
 
@@ -45,137 +37,171 @@ class _HomePageState extends State<HomePage> {
     var screenWidth = MediaQuery.of(context).size.width;
     var topBarHeight = screenHeight / 15;
     var spaceHeight = screenHeight / 6.5;
-    var inputHeight = spaceHeight / 2;
+    var inputHeight = spaceHeight / 2.5;
     var inputWidth = (screenWidth / 3) / 1.1;
-    var paddingHeight = (screenWidth - inputWidth * 2 - spaceHeight) / 3;
-    var buttonBarHeight = 50.0;
+    var buttonBarHeight = screenHeight / 15;
 
-    return Scaffold(
-        drawerEdgeDragWidth: 0.0,
-        backgroundColor: widget.mode.backgroundColor, // Background color
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          // Hide Drawer hamburger icon
-          elevation: 0,
-          // Remove shadow
-          backgroundColor: widget.mode.foregroundColor,
-          // Tint color
-          title: Container(
-            height: topBarHeight,
-            width: screenWidth,
-            child: Image.asset("assets/images/home/bismillah_wide.png",
-                alignment: Alignment.center),
-          ),
-          bottom: PreferredSize(
-            preferredSize: Size(screenWidth, spaceHeight + buttonBarHeight),
-            child: Column(
+    Widget Buttons() {
+      return Container(
+        height: buttonBarHeight,
+        child: ButtonBar(
+          alignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            FlatButton(
+              onPressed: () {
+                widget.drawerKey.currentState.openDrawer();
+              },
+              child: Image.asset("assets/images/icons/settings_icon.png"),
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/personal');
+              },
+              child: Image.asset("assets/images/icons/store_icon.png"),
+            )
+          ],
+        ),
+      );
+    }
+
+    Widget Personal() {
+      return Container(
+        alignment: Alignment.topCenter,
+        child: Stack(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  height: buttonBarHeight,
-                  child: ButtonBar(
-                    alignment: MainAxisAlignment.spaceBetween,
+                InputBar(
+                  width: inputWidth,
+                  height: inputHeight,
+                  color: Theme.of(context).canvasColor,
+                  itemAlignment: Alignment.topLeft,
+                  item:  Stack(
                     children: <Widget>[
-                      FlatButton(
-                        onPressed: () {
-                          widget.drawerKey.currentState.openDrawer();
-                        },
-                        child: Image.asset(
-                            "assets/images/icons/settings_icon.png",
-                            alignment: Alignment.center),
+                      Container(
+                        height: 40,
+                        width: 40 ,
+                        child: ColorFiltered(
+                          child: Image.asset("assets/images/home/life_bg.png"),
+                          colorFilter: ColorFilter.mode(Theme.of(context).canvasColor , BlendMode.srcATop),
+                        )
                       ),
-                      FlatButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/personal');
-                        },
-                        child: Image.asset("assets/images/icons/store_icon.png",
-                            alignment: Alignment.center),
-                      )
+                      Container(
+                        height: 40,
+                        width: 40 ,
+                        child: Image.asset("assets/images/home/life.png"),
+                      ),
+                    ],
+                  ),
+
+                ),
+                Badge(
+                  height: spaceHeight,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/personal');
+                  },
+                  badge: Image.asset("assets/images/badges/badge_kaaba.png",
+                      alignment: Alignment.center),
+                  percentage: 50.0,
+                  level: 7,
+                ),
+                InputBar(
+                  width: inputWidth,
+                  height: inputHeight,
+                  color: Theme.of(context).canvasColor,
+                  itemAlignment: Alignment.topRight,
+                  item:  Stack(
+                    children: <Widget>[
+                      Container(
+                        height: 40,
+                        width: 40 ,
+                          child: ColorFiltered(
+                              child: Image.asset("assets/images/home/coins_bg.png"),
+                            colorFilter: ColorFilter.mode(Theme.of(context).canvasColor , BlendMode.srcATop),
+                          )
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40 ,
+                        child: Image.asset("assets/images/home/coins.png"),
+                      ),
                     ],
                   ),
                 ),
-                Stack(
-                  children: <Widget>[
-                    AppBarSpace(screenWidth, spaceHeight),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        InputBar(
-                          width: inputWidth,
-                          height: inputHeight,
-                          paddingHeight: paddingHeight,
-                          input: Text(
-                            widget.name,
-                            textScaleFactor: screenHeight / 650,
-                          ),
-                        ),
-                        Badge(
-                          height: spaceHeight,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/personal');
-                          },
-                          badge: Image.asset(
-                              "assets/images/badges/badge_kaaba.png",
-                              alignment: Alignment.center),
-                          percentage: 70.0,
-                          level: 7,
-                        ),
-                        InputBar(
-                          width: inputWidth,
-                          height: inputHeight,
-                          paddingHeight: paddingHeight,
-                          input: Container(
-                              height: inputHeight / 3.5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: lives,
-                              )),
-                        ),
-                      ],
-                    )
-                  ],
+              ],
+            )
+          ],
+        ),
+      );
+    }
+
+    return Scaffold(
+      drawerEdgeDragWidth: 0.0,
+      appBar: PreferredSize(
+        preferredSize: Size(
+            screenWidth, spaceHeight + buttonBarHeight + topBarHeight + 25),
+        child: Stack(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                Container(
+                  height: widget.appBarHeight,
+                  width: screenWidth,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: <Color>[
+                    Theme.of(context).primaryColor.withOpacity(0.5),
+                    Theme.of(context).primaryColor,
+
+                  ])),
                 ),
               ],
             ),
-          ),
-        ),
-        body: Container(
-          width: screenWidth,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              FlatButton(
-                  shape: CircleBorder(),
-                  color: Colors.redAccent,
-                  onPressed: loseLife,
-                  child: Icon(Icons.remove)),
-              FlatButton(
-                  shape: CircleBorder(),
-                  color: Colors.greenAccent,
-                  onPressed: gainLife,
-                  child: Icon(Icons.add)),
-            ],
-          ),
-        ));
-  }
+            Column(
+              children: <Widget>[
+                Container(
+                  height: 25,
+                ),
+                Container(
+                  height: topBarHeight,
+                  child: ColorFiltered(
+                    child: Image.asset("assets/images/home/bismillah.png" ),
+                    colorFilter: ColorFilter.mode(darkMode ? Colors.black : Colors.white , BlendMode.srcATop),
 
-
-  Widget AppBarSpace(width, height){
-    return Column(
-      children: <Widget>[
-        Container(
-          width: width,
-          height: height / 2,
+                  ),
+                ),
+                Buttons(),
+                Personal(),
+              ],
+            ),
+          ],
         ),
-        Container(
-          width: width,
-          height: height / 2,
-          color: widget.mode.backgroundColor,
-        ),
-      ],
+      ),
+      body: Column(
+        children: <Widget>[
+          Container(
+            width: screenWidth,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FlatButton(
+                    shape: CircleBorder(),
+                    onPressed: () => {
+                          BlocProvider.of<ThemeBloc>(context).dispatch(
+                              ThemeChanged(
+                                  theme: darkMode
+                                      ? AppTheme.values[1]
+                                      : AppTheme.values[0])),
+                          changeMode(),
+                        },
+                    child: darkMode ? Icon(Icons.wb_sunny) : Icon(Entypo.moon)),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
-
-

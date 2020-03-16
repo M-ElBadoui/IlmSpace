@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+import 'package:google_fonts/google_fonts.dart';
+
 class Badge extends StatefulWidget {
   Badge({this.height, this.onTap, this.level, this.badge, this.percentage});
 
@@ -35,6 +37,8 @@ class BadgeState extends State<Badge> {
                 painter: BadgeContainer(
                   width: badgeWidth,
                   height: badgeWidth,
+                  color: Theme.of(context).canvasColor,
+                  color2: Theme.of(context).primaryColor,
                 ),
               ),
             ),
@@ -63,23 +67,26 @@ class BadgeState extends State<Badge> {
                 alignment: Alignment.topCenter,
                 child: Container(
                     child: Stack(
-                      alignment: Alignment.topCenter,
-                      children: <Widget>[
-                        CustomPaint(
-                          painter: LevelContainer(
-                            width: badgeWidth,
-                            height: badgeWidth,
-                          ),
-                        ),
-                        Text(
-                          widget.level.toString(),
-                          style: TextStyle(
-                            height: 0.5,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    )),
+                  alignment: Alignment.topCenter,
+                  children: <Widget>[
+                    CustomPaint(
+                      painter: LevelContainer(
+                        width: badgeWidth,
+                        height: badgeWidth,
+                        color: Theme.of(context).canvasColor,
+                        color2: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    Text(
+                      '7',
+                      style: GoogleFonts.amiri(
+                          height: 0.5,
+                          fontSize: 24,
+                      ),
+
+                    ),
+                  ],
+                )),
               ),
             ),
           ],
@@ -103,17 +110,36 @@ class ExpBar extends CustomPainter {
     final startAngle = -math.pi / 2;
     final sweepAngle = 2 * math.pi * percentage / 100;
 
-    final paint = Paint()
-      ..color = Color.fromRGBO(211, 188, 95, 1)
+    final front = Paint()
+      ..color = Color.fromRGBO(100, 170, 100, 1)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = width / 9;
-
+    final frontBlur = Paint()
+      ..color = Color.fromRGBO(0, 0, 0, 0.5)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = width / 9
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 2);
+    final back = Paint()
+      ..color = Color.fromRGBO(90, 90, 90, 1)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = width / 9;
+    final backBlur = Paint()
+      ..color = Color.fromRGBO(0, 0, 0, 0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = width / 9
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 2);
 
     Rect myRect =
         new Rect.fromLTWH(size.width / 2, size.height / 2, width, height);
 
-    canvas.drawArc(myRect, startAngle, sweepAngle, false, paint);
+    canvas.drawArc(myRect, 0, 2 * math.pi, false, backBlur);
+    canvas.drawArc(myRect, 0, 2 * math.pi, false, back);
+    canvas.drawArc(myRect, startAngle, sweepAngle, false, frontBlur);
+    canvas.drawArc(myRect, startAngle, sweepAngle, false, front);
   }
 
   @override
@@ -121,19 +147,22 @@ class ExpBar extends CustomPainter {
 }
 
 class BadgeContainer extends CustomPainter {
-  BadgeContainer({this.width, this.height});
+  BadgeContainer({this.width, this.height, this.color, this.color2});
 
   final double width;
   final double height;
+  final Color color;
+  final Color color2;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Color.fromRGBO(243, 243, 238, 1);
+    final paint = Paint()..color = color;
 
-    // center of the canvas is (x,y) => (width/2, height/2)
     var center = Offset(size.width / 2, size.height / 2);
 
     canvas.drawCircle(center, width / 2, paint);
+    canvas.drawCircle(
+        center, width / 2.90, Paint()..color = color2.withOpacity(0.5));
   }
 
   @override
@@ -141,22 +170,26 @@ class BadgeContainer extends CustomPainter {
 }
 
 class LevelContainer extends CustomPainter {
-  LevelContainer({this.width, this.height});
+  LevelContainer({this.width, this.height, this.color, this.color2});
 
   final double width;
   final double height;
+  final Color color;
+  final Color color2;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final stroke = Paint()
-      ..color = Color.fromRGBO(0, 0, 0, 1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = width / 12;
-    final fill = Paint()..color = Color.fromRGBO(243, 243, 238, 1);
+
+    final fill = Paint()..color = color;
 
     var center = Offset(0, 0);
 
-    canvas.drawCircle(center, width / 8, stroke);
+    canvas.drawCircle(
+        center,
+        width / 8,
+        BoxShadow(color: Colors.black, blurRadius: 3, spreadRadius: 3)
+            .toPaint());
+
     canvas.drawCircle(center, width / 8, fill);
   }
 
